@@ -102,51 +102,51 @@ async function checkAndEndCall(callId) {
 // End a call using Control URL
 async function endCall(callId, reason) {
   const callData = activeCalls.get(callId);
-  
+
   if (!callData || callData.ended) {
     return;
   }
-  
+
   callData.ended = true;
-  
-  // Clear timeout
+
+  // Clear timer
   if (callData.timerId) {
     clearTimeout(callData.timerId);
   }
-  
+
   const elapsed = ((Date.now() - callData.startTime) / 1000).toFixed(1);
   console.log(`⏱️ Ending call ${callId} after ${elapsed}s (${reason})`);
 
   try {
-    // 1️⃣ Enqueue a farewell message
-    const goodbyeMessage = {
-      type: "enqueue-message",
-      message: {
-        type: "text", 
-        text: "உங்கள் நேரத்துக்கு நன்றி! சத்யா ல இன்னும் நிறைய Offers இருக்கு.நேர்ல வந்து பாருங்க Thank you!",
-      }
+    // 1️⃣ Use the correct `say` command
+    const goodbyeCommand = {
+      type: "say",
+      content: "உங்கள் நேரத்துக்கு நன்றி! இனிய நாள் வாழ்த்துகள்!",
+      endCallAfterSpoken: false
     };
 
-    console.log(`🎧 Sending goodbye message for call ${callId}`);
+    console.log(`🎧 Sending goodbye speech for call ${callId}`);
 
-    const playResponse = await fetch(callData.controlUrl, {
+    // Send the speech command
+    const speakResponse = await fetch(callData.controlUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(goodbyeMessage),
+      body: JSON.stringify(goodbyeCommand),
     });
 
-    if (!playResponse.ok) {
-      const text = await playResponse.text();
-      console.error(`❌ Failed to enqueue goodbye message:`, text);
+    if (!speakResponse.ok) {
+      const text = await speakResponse.text();
+      console.error(`❌ Failed to send goodbye speech:`, text);
     } else {
-      console.log(`🎧 Goodbye message enqueued for call ${callId}`);
+      console.log(`🎧 Goodbye speech command sent`);
     }
 
-    // Wait a short moment so the message plays before ending
-    await new Promise(resolve => setTimeout(resolve, 2000)); // ~2 seconds
+    // Optional: Wait for speech to finish (tune delay as needed)
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 3 seconds
 
-    // 2️⃣ End the call
-    console.log(`🛑 Calling end-call for call ${callId}`);
+    // 2️⃣ Now send the end-call command
+    console.log(`🛑 Ending call after goodbye for ${callId}`);
+
     const endResponse = await fetch(callData.controlUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -159,16 +159,18 @@ async function endCall(callId, reason) {
       const text = await endResponse.text();
       console.error(`❌ Failed to end call ${callId}:`, text);
     }
+
   } catch (error) {
-    console.error(`❌ Error ending call ${callId}:`, error.message);
+    console.error(`❌ Error in endCall for ${callId}`, error.message);
   }
 
-  // Cleanup after 30 seconds
+  // Cleanup after 30s
   setTimeout(() => {
     activeCalls.delete(callId);
     console.log(`🗑️ Cleaned up call ${callId}`);
   }, 30000);
 }
+
 
 
 /**
