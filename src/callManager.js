@@ -23,7 +23,7 @@ export async function handleVapiWebhook(webhookData) {
   console.log(`📞 Call ${callId}: ${eventType}`);
   
   switch (eventType) {
-    case 'assistant-request':
+    case 'assistant.started':
     case 'call-start':
     case 'call.started':
       await handleCallStart(call);
