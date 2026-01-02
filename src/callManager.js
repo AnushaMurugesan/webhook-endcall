@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const MAX_DURATION = parseInt(process.env.MAX_CALL_DURATION_SECONDS || '15');
+const MAX_DURATION = parseInt(process.env.MAX_CALL_DURATION_SECONDS || '176');
 
 // Store active calls
 const activeCalls = new Map();
@@ -121,7 +121,7 @@ async function endCall(callId, reason) {
     // 1️⃣ Use the correct `say` command
     const goodbyeCommand = {
       type: "say",
-      content: "உங்கள் நேரத்துக்கு நன்றி! இனிய நாள் வாழ்த்துகள்!",
+      content: "உங்கள் நேரத்துக்கு நன்றி! சத்யா ல நிறைய Offers இருக்கு.நேர்ல வந்து பாருங்க Thank you!",
       endCallAfterSpoken: false
     };
 
@@ -142,7 +142,7 @@ async function endCall(callId, reason) {
     }
 
     // Optional: Wait for speech to finish (tune delay as needed)
-    await new Promise(resolve => setTimeout(resolve, 5000)); // 3 seconds
+    await new Promise(resolve => setTimeout(resolve, 6000)); // 3 seconds
 
     // 2️⃣ Now send the end-call command
     console.log(`🛑 Ending call after goodbye for ${callId}`);
