@@ -142,7 +142,7 @@ async function endCall(callId, reason) {
     }
 
     // Optional: Wait for speech to finish (tune delay as needed)
-    await new Promise(resolve => setTimeout(resolve, 6000)); // 3 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 3 seconds
 
     // 2️⃣ Now send the end-call command
     console.log(`🛑 Ending call after goodbye for ${callId}`);
